@@ -125,6 +125,8 @@ First, [install Flask](http://flask.pocoo.org/docs/1.0/installation/#install-fla
 
 To start and run the local development server,
 
+#### For Linux
+
 1. Initialize and activate a virtualenv:
   ```
   $ cd YOUR_PROJECT_DIRECTORY_PATH/
@@ -142,6 +144,31 @@ To start and run the local development server,
   $ export FLASK_APP=myapp
   $ export FLASK_ENV=development # enables debug mode
   $ python3 app.py
+  ```
+
+4. Navigate to Home page [http://localhost:5000](http://localhost:5000)
+
+
+#### For Windows
+
+1. Initialize and activate a virtualenv:
+  ```
+  > cd YOUR_PROJECT_DIRECTORY_PATH/
+  > pip install virtualenv [ RUN THIS IF YOU HAVEN'T INSTALLED virtualenv package ]
+  > python -m venv env_name
+  > env_name\Scripts\activate.bat
+  ```
+
+2. Install the dependencies:
+  ```
+  $ pip install -r requirements.txt
+  ```
+
+3. Run the development server:
+  ```
+  $ export FLASK_APP=myapp.py
+  $ export FLASK_ENV=development # enables debug mode
+  $ python -m flask run
   ```
 
 4. Navigate to Home page [http://localhost:5000](http://localhost:5000)
