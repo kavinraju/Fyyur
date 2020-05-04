@@ -118,14 +118,13 @@ Best of luck in your final project! Fyyur depends on you!
 
 First, [install Flask](http://flask.pocoo.org/docs/1.0/installation/#install-flask) if you haven't already.
 
+#### For Linux
+
   ```
   $ cd ~
   $ sudo pip3 install Flask
   ```
-
 To start and run the local development server,
-
-#### For Linux
 
 1. Initialize and activate a virtualenv:
   ```
@@ -151,6 +150,11 @@ To start and run the local development server,
 
 #### For Windows
 
+  ```
+  > pip install Flask
+  ```
+To start and run the local development server,
+
 1. Initialize and activate a virtualenv:
   ```
   > cd YOUR_PROJECT_DIRECTORY_PATH/
@@ -161,14 +165,14 @@ To start and run the local development server,
 
 2. Install the dependencies:
   ```
-  $ pip install -r requirements.txt
+  > pip install -r requirements.txt
   ```
 
 3. Run the development server:
   ```
-  $ export FLASK_APP=myapp.py
-  $ export FLASK_ENV=development # enables debug mode
-  $ python -m flask run
+  > export FLASK_APP=myapp.py
+  > export FLASK_ENV=development # enables debug mode
+  > python -m flask run
   ```
 
 4. Navigate to Home page [http://localhost:5000](http://localhost:5000)
