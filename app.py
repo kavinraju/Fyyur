@@ -66,7 +66,10 @@ class Venue(db.Model):
     # 'genres' describes many to many relationship between Venue-(Parent) and Genre-(Child) by an association table `genres_venues`
     genres = db.relationship('Genre', secondary=genres_venues, backref=db.backref('venues'), lazy=True)
     # 'shows' describes one to many relationship between Venue-(Parent) and Show-(Child)
-    shows = db.relationship('Show', backref=db.backref('venues', lazy=True))
+    ## Most Recent shows are shown first by adding 
+    # order_by='desc(Show.start_time) in 
+    # Past Shows & Upcoming Shows section of venues/<int:venue_id> endpoint
+    shows = db.relationship('Show', backref=db.backref('venues', lazy=True), order_by='desc(Show.start_time)')
 
     # TODO: implement any missing fields, as a database migration using Flask-Migrate - DONE
     def __repr__(self):
@@ -91,7 +94,10 @@ class Artist(db.Model):
     # 'genres' describes many to many relationship between Artist-(Parent) and Genre-(Child) by an association table `genres_artists`
     genres = db.relationship('Genre', secondary=genres_artists, backref=db.backref('artists'), lazy=True)
     # 'shows' describes one to many relationship between Artist-(Parent) and Show-(Child)
-    shows = db.relationship('Show', backref=db.backref('artists', lazy=True))
+    ## Most Recent shows are shown first by adding 
+    # order_by='desc(Show.start_time) in 
+    # Past Shows & Upcoming Shows section of artists/<int:artist_id> endpoint
+    shows = db.relationship('Show', backref=db.backref('artists', lazy=True), order_by='desc(Show.start_time)')
 
     # TODO: implement any missing fields, as a database migration using Flask-Migrate - DONE
 
@@ -725,7 +731,8 @@ def shows():
   # TODO: replace with real venues data.
   #       num_shows should be aggregated based on number of upcoming shows per venue.
 
-  shows = Show.query.all()
+  # .desc() is called to show the most recent show first in /shows.
+  shows = Show.query.order_by(Show.start_time.desc()).all()
   data = []
 
   for show in shows:
