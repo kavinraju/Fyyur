@@ -499,9 +499,9 @@ def show_artist(artist_id):
     else:
       upcoming_shows_count+=1
       upcoming_shows.append({
-        "venue_id": show.artist_id,
-        "venue_name": show.artists.name,
-        "venue_image_link": show.artists.image_link,
+        "venue_id": show.venue_id,
+        "venue_name": show.venues.name,
+        "venue_image_link": show.venues.image_link,
         "start_time": format_datetime(str(show.start_time))
       })
 
