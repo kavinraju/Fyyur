@@ -220,7 +220,35 @@ def show_venue(venue_id):
   # shows the venue page with the given venue_id
   # TODO: replace with real venue data from the venues table, using venue_id
   venue = Venue.query.get(venue_id)
+  shows = venue.shows # returns list [] of Show objects
+
+  # initializations
   genres = []
+  past_shows = []
+  upcoming_shows = []
+  past_shows_count = 0
+  upcoming_shows_count = 0
+
+  # Iterating shows[] list to separate the upcoming and past shows
+  for show in shows:
+    if datetime.today() > show.start_time:
+      past_shows_count+=1
+      past_shows.append({
+        "artist_id": show.artist_id,
+        "artist_name": show.artists.name,
+        "artist_image_link": show.artists.image_link,
+        "start_time": format_datetime(str(show.start_time))
+      })
+    else:
+      upcoming_shows_count+=1
+      upcoming_shows.append({
+        "artist_id": show.artist_id,
+        "artist_name": show.artists.name,
+        "artist_image_link": show.artists.image_link,
+        "start_time": format_datetime(str(show.start_time))
+      })
+
+  # Iterating the genres list to get the name of the genre
   for genre in venue.genres:
     genres.append(genre.name)
   
@@ -237,13 +265,13 @@ def show_venue(venue_id):
     "seeking_talent": venue.seeking_talent,
     "seeking_description": venue.seeking_description,
     "image_link": venue.image_link,
-    "past_shows": [],
-    "upcoming_shows": [],
-    "past_shows_count": 0,
-    "upcoming_shows_count": 0,
+    "past_shows": past_shows,
+    "upcoming_shows": upcoming_shows,
+    "past_shows_count": past_shows_count,
+    "upcoming_shows_count": upcoming_shows_count,
   }
 
-  data1={
+  """ data1={
     "id": 1,
     "name": "The Musical Hop",
     "genres": ["Jazz", "Reggae", "Swing", "Classical", "Folk"],
@@ -320,7 +348,7 @@ def show_venue(venue_id):
     "past_shows_count": 1,
     "upcoming_shows_count": 1,
   }
-  #data = list(filter(lambda d: d['id'] == venue_id, [data1, data2, data3]))[0]
+  #data = list(filter(lambda d: d['id'] == venue_id, [data1, data2, data3]))[0] """
   return render_template('pages/show_venue.html', venue=data)
 
 #  Create Venue
@@ -443,7 +471,35 @@ def show_artist(artist_id):
   # shows the venue page with the given venue_id
   # TODO: replace with real venue data from the venues table, using venue_id
   artist = Artist.query.get(artist_id)
+  shows = artist.shows # returns list [] of Show objects
+
+  # initializations
   genres = []
+  past_shows = []
+  upcoming_shows = []
+  past_shows_count = 0
+  upcoming_shows_count = 0
+
+  # Iterating shows[] list to separate the upcoming and past shows
+  for show in shows:
+    if datetime.today() > show.start_time:
+      past_shows_count+=1
+      past_shows.append({
+        "venue_id": show.venue_id,
+        "venue_name": show.venues.name,
+        "venue_image_link": show.venues.image_link,
+        "start_time": format_datetime(str(show.start_time))
+      })
+    else:
+      upcoming_shows_count+=1
+      upcoming_shows.append({
+        "venue_id": show.artist_id,
+        "venue_name": show.artists.name,
+        "venue_image_link": show.artists.image_link,
+        "start_time": format_datetime(str(show.start_time))
+      })
+
+
 
   for genre in artist.genres:
     genres.append(genre.name)
@@ -460,10 +516,10 @@ def show_artist(artist_id):
     "seeking_venue": artist.seeking_venue,
     "seeking_description": artist.seeking_description,
     "image_link": artist.image_link,
-    "past_shows": [],
-    "upcoming_shows": [],
-    "past_shows_count": 0,
-    "upcoming_shows_count": 0,
+    "past_shows": past_shows,
+    "upcoming_shows": upcoming_shows,
+    "past_shows_count": past_shows_count,
+    "upcoming_shows_count": upcoming_shows_count,
   }
 
   """ data1={
