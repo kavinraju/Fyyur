@@ -123,7 +123,8 @@ def format_datetime(value, format='medium'):
       format="EEEE MMMM, d, y 'at' h:mma"
   elif format == 'medium':
       format="EE MM, dd, y h:mma"
-  return babel.dates.format_datetime(date, format)
+  # Adding locale='en' in format_datetime() solved: AttributeError: 'NoneType' object has no attribute 'days'
+  return babel.dates.format_datetime(date, format, locale='en')
 
 app.jinja_env.filters['datetime'] = format_datetime
 
@@ -667,8 +668,27 @@ def shows():
   # displays list of shows at /shows
   # TODO: replace with real venues data.
   #       num_shows should be aggregated based on number of upcoming shows per venue.
-  
-  data=[{
+
+  shows = Show.query.all()
+  data = []
+
+  for show in shows:
+    # Getting the venue details using backref of Venue
+    venue = show.venues
+    # Getting the artist details using backref of Artist
+    artist = show.artists
+    start_time = format_datetime(str(show.start_time))
+    print("start_time", start_time, '\n\n\n')
+    data.append({
+      "venue_id": show.venue_id,
+      "venue_name": venue.name,
+      "artist_id": show.artist_id,
+      "artist_name": artist.name,
+      "artist_image_link": artist.image_link,
+      "start_time": start_time
+    })
+
+  """ data=[{
     "venue_id": 1,
     "venue_name": "The Musical Hop",
     "artist_id": 4,
@@ -703,7 +723,7 @@ def shows():
     "artist_name": "The Wild Sax Band",
     "artist_image_link": "https://images.unsplash.com/photo-1558369981-f9ca78462e61?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=794&q=80",
     "start_time": "2035-04-15T20:00:00.000Z"
-  }]
+  }] """
   return render_template('pages/shows.html', shows=data)
 
 @app.route('/shows/create')
