@@ -7,6 +7,11 @@ Fyyur is a musical venue and artist booking site that facilitates the discovery 
 
 Your job is to build out the data models to power the API endpoints for the Fyyur site by connecting to a PostgreSQL database for storing, querying, and creating information about artists and venues on Fyyur.
 
+### NOTE:
+1. Before running [app.py](https://github.com/kavinraju/Fyyur/blob/master/app.py), don't forget to update the `SQLALCHEMY_DATABASE_URI` in [config.py](https://github.com/kavinraju/Fyyur/blob/master/config.py).
+2. Create a Database with the name `fyyur` using CLI, as it's mentioned the `SQLALCHEMY_DATABASE_URI` in [config.py](https://github.com/kavinraju/Fyyur/blob/master/config.py). If you want to try with a new name/already existing name, feel free to change the Database Name.
+3. This project is configured with Flask-Migrate for creating and running schema migrations.
+
 ### This project is part of Full-Stack Developer Nanodegree program of Udacity
 
 The starter code of this project was cloned from [FSND Repository](https://github.com/kavinraju/FSND/tree/master/projects/01_fyyur/starter_code). The initial `commit dcda88487674f6b6622c24cb13ae93eb4419cb99` of this [current repo](https://github.com/kavinraju/Fyyur) contains the starter code.
