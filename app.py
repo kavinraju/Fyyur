@@ -642,7 +642,7 @@ def create_artist_submission():
       print('Successful added the artist - ', name)
     except Exception as e:
       error_occured=True
-      print('Error occured in creating the venue - ', name, '\n', e)
+      print('Error occured in creating the artist - ', name, '\n', e)
       db.session.rollback()
     finally:
       db.session.close()
@@ -667,6 +667,7 @@ def shows():
   # displays list of shows at /shows
   # TODO: replace with real venues data.
   #       num_shows should be aggregated based on number of upcoming shows per venue.
+  
   data=[{
     "venue_id": 1,
     "venue_name": "The Musical Hop",
@@ -715,13 +716,39 @@ def create_shows():
 def create_show_submission():
   # called to create new shows in the db, upon submitting new show listing form
   # TODO: insert form data as a new Show record in the db, instead
+  showForm = ShowForm(request.form)
+  error_occured=False
 
-  # on successful db insert, flash success
-  flash('Show was successfully listed!')
-  # TODO: on unsuccessful db insert, flash an error instead.
-  # e.g., flash('An error occurred. Show could not be listed.')
+  if showForm.validate():
+    try:
+      artist_id = showForm.artist_id.data
+      venue_id = showForm.venue_id.data
+      start_time = showForm.start_time.data
+
+      show = Show(artist_id=artist_id, venue_id=venue_id, start_time=start_time)
+      db.session.add(show)
+      db.session.commit()
+      print('Successfully added the Show at ', start_time)
+    except Exception as e:
+      error_occured = True
+      print('Error occured in creating the show - ', '\n', e)
+      db.session.rollback()
+    finally:
+      db.session.close()
+  else:
+    print('Validation False')
+    flash('Please try again! Enter a valid input.')
+    return redirect(url_for('index'))
+
+  if error_occured:
+    # TODO: on unsuccessful db insert, flash an error instead.
+    flash('An error occurred. Show could not be listed.')
+  else:
+    # on successful db insert, flash success
+    flash('Show was successfully listed!')
+
   # see: http://flask.pocoo.org/docs/1.0/patterns/flashing/
-  return render_template('pages/home.html')
+  return redirect(url_for('index'))
 
 @app.errorhandler(404)
 def not_found_error(error):
