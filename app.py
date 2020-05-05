@@ -34,6 +34,10 @@ genres_venues = db.Table('genres_venues',
     db.Column('venue_id', db.Integer, db.ForeignKey('Venue.id'), primary_key=True)
 )
 
+genres_artists = db.Table('genres_artists',
+    db.Column('genre_id', db.Integer, db.ForeignKey('Genre.id'), primary_key=True),
+    db.Column('artist_id', db.Integer, db.ForeignKey('Artist.id'), primary_key=True)
+)
 class Genre(db.Model):
   __tablename__ = "Genre"
   
@@ -81,14 +85,14 @@ class Artist(db.Model):
     seeking_venue = db.Column(db.Boolean, nullable=False)
     seeking_description = db.Column(db.String())
 
+    genres = db.relationship('Genre', secondary=genres_artists, backref=db.backref('artists'), lazy=True)
+
     # TODO: implement any missing fields, as a database migration using Flask-Migrate - DONE
+
     def __repr__(self):
       return f'<ID: {self.id}, NAME: {self.name}, CITY & STATE: {self.city},{self.state}, PHONE: {self.phone},\
       IMAGE_LINK: {self.image_link}, FACEBOOK_LINK: {self.facebook_link}, WEBSITE: {self.website},\
-      SEEKING VENUE: {self.search_venue}, SEEKING DESCRIPTION: {self.seeking_description}'
-
-    def __repr__(self):
-        return f'<ID: {self.id}, START TIME: {self.start_time}, ARTIST ID: {self.artist_id}, VENUE ID: {self.venue_id}'
+      SEEKING VENUE: {self.seeking_venue}, SEEKING DESCRIPTION: {self.seeking_description}'
 
 # TODO Implement Show and Artist models, and complete all model relationships and properties, as a database migration.
 
@@ -348,7 +352,7 @@ def create_venue_submission():
         
       db.session.add(venue)
       db.session.commit()
-      print('Successful created the venue - ', name)
+      print('Successful added the venue - ', name)
     except Exception as e:
       error_occured = True
       print('Error occured in creating the venue - ', name, '\n', e)
@@ -380,7 +384,16 @@ def delete_venue(venue_id):
 @app.route('/artists')
 def artists():
   # TODO: replace with real data returned from querying the database
-  data=[{
+  artists = Artist.query.all()
+  data = []
+
+  for artist in artists:
+    data.append({
+      "id": artist.id,
+      "name": artist.name
+    })
+
+  """ data=[{
     "id": 4,
     "name": "Guns N Petals",
   }, {
@@ -389,7 +402,7 @@ def artists():
   }, {
     "id": 6,
     "name": "The Wild Sax Band",
-  }]
+  }] """
   return render_template('pages/artists.html', artists=data)
 
 @app.route('/artists/search', methods=['POST'])
@@ -411,7 +424,31 @@ def search_artists():
 def show_artist(artist_id):
   # shows the venue page with the given venue_id
   # TODO: replace with real venue data from the venues table, using venue_id
-  data1={
+  artist = Artist.query.get(artist_id)
+  genres = []
+
+  for genre in artist.genres:
+    genres.append(genre.name)
+  
+  data={
+    "id": artist.id,
+    "name": artist.name,
+    "genres": genres,
+    "city": artist.city,
+    "state": artist.state,
+    "phone": artist.phone,
+    "website": artist.website,
+    "facebook_link": artist.facebook_link,
+    "seeking_venue": artist.seeking_venue,
+    "seeking_description": artist.seeking_description,
+    "image_link": artist.image_link,
+    "past_shows": [],
+    "upcoming_shows": [],
+    "past_shows_count": 0,
+    "upcoming_shows_count": 0,
+  }
+
+  """ data1={
     "id": 4,
     "name": "Guns N Petals",
     "genres": ["Rock n Roll"],
@@ -481,8 +518,8 @@ def show_artist(artist_id):
     }],
     "past_shows_count": 0,
     "upcoming_shows_count": 3,
-  }
-  data = list(filter(lambda d: d['id'] == artist_id, [data1, data2, data3]))[0]
+  } """
+  #data = list(filter(lambda d: d['id'] == artist_id, [data1, data2, data3]))[0]
   return render_template('pages/show_artist.html', artist=data)
 
 #  Update
@@ -552,12 +589,57 @@ def create_artist_submission():
   # called upon submitting the new artist listing form
   # TODO: insert form data as a new Venue record in the db, instead
   # TODO: modify data to be the data object returned from db insertion
+  artistForm = ArtistForm(request.form)
+  error_occured = False
 
-  # on successful db insert, flash success
-  flash('Artist ' + request.form['name'] + ' was successfully listed!')
-  # TODO: on unsuccessful db insert, flash an error instead.
-  # e.g., flash('An error occurred. Artist ' + data.name + ' could not be listed.')
-  return render_template('pages/home.html')
+  if artistForm.validate():  
+    try:
+      name = artistForm.name.data
+      city = artistForm.city.data
+      state = artistForm.state.data
+      phone = artistForm.phone.data
+      genres = artistForm.genres.data
+      image_link = artistForm.image_link.data
+      facebook_link = artistForm.facebook_link.data
+      website = artistForm.website.data
+      seeking_venue = artistForm.seeking_venue.data
+      seeking_description = artistForm.seeking_description.data
+
+      # Create a Venue object to insert into DB
+      artist =  Artist(name=name, city=city, state=state, phone=phone,image_link=image_link,
+      facebook_link=facebook_link, website=website, seeking_venue=seeking_venue, seeking_description=seeking_description)
+
+      # Create a Genre object to insert into DB
+      for genre in genres:
+        genre_in_db = Genre.query.filter_by(name=genre).one_or_none()
+        
+        if genre_in_db:
+          artist.genres.append(genre_in_db)
+        else:
+          new_genre = Genre(name=genre)
+          db.session.add(new_genre)
+          artist.genres.append(new_genre)
+
+      db.session.add(artist)
+      db.session.commit()
+      print('Successful added the artist - ', name)
+    except Exception as e:
+      error_occured=True
+      print('Error occured in creating the venue - ', name, '\n', e)
+      db.session.rollback()
+    finally:
+      db.session.close()
+  else:
+    print('Validation False')
+
+  if error_occured:
+    # TODO: on unsuccessful db insert, flash an error instead.
+    flash('An error occurred. Artist ' + artistForm.name.data + ' could not be listed.')
+  else:
+    # on successful db insert, flash success
+    flash('Artist ' + artistForm.name.data + ' was successfully listed!')
+  
+  return redirect(url_for('index'))
 
 
 #  Shows

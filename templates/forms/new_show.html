@@ -20,5 +20,6 @@
         </div>
       <input type="submit" value="Create Venue" class="btn btn-primary btn-lg btn-block">
     </form>
+    {{ form.csrf_token }} {# This is required if not given then form.validate() method always return false allthough all the form fields are valid #}
   </div>
 {% endblock %}

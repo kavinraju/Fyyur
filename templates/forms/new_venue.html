@@ -53,7 +53,7 @@
           {{ form.facebook_link(class_ = 'form-control', placeholder='http://', id='form.state', autofocus = true) }}
         </div>
       <input type="submit" value="Create Venue" class="btn btn-primary btn-lg btn-block">
-      {{ form.csrf_token }}
-    </form>
+      {{ form.csrf_token }} {# This is required if not given then form.validate() method always return false allthough all the form fields are valid #}
+    </form> 
   </div>
 {% endblock %}
