@@ -872,18 +872,23 @@ def search_shows():
   # Initializations
   response = []
 
+  # Iterate over venues to find the shows
   for venue in venues:
     
     # Getting the shows of the `venue`
     shows = venue.shows
 
-    # Looping over shows to 
+    # Looping over `shows` to get the details of the venue and artist of the particular `show`
     for show in shows:
+
+      # flag to have a track id the `show` is an upcoming show or not
       is_upComingShow  = False
       
       if datetime.today() <= show.start_time:
+        # update `is_upComingShow` to True if the  `show` is an upcoming show
         is_upComingShow = True
       
+      # Adding the required data to update the Front-End
       response.append({
         "venue_id": show.venues.id,
         "venue_name": show.venues.name,
