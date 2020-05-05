@@ -4,9 +4,9 @@
 <div class="page-header">
     <h1>Fyyur Search!</h1>
     {% if (results.count == 0) %}
-        <h5>No of search results for "{{ search_term }}"</h5>
+        <h4>No of search results for "{{ search_term }}"</h4>
     {% else %}
-        <h5>Number of search results for "{{ search_term }}": {{ results|length }}</h5>
+        <h4>Number of search results for "{{ search_term }}": {{ results|length }}</h4>
 </div>
     <div class="row shows">
         {% for show in results %}

@@ -1,10 +1,13 @@
 {% extends 'layouts/main.html' %}
 {% block title %}Fyyur | Artists Search{% endblock %}
 {% block content %}
-{% if (results.count == 0) %}
-<h3>No of search results for "{{ search_term }}"</h3>
-{% else %}
-<h3>Number of search results for "{{ search_term }}": {{ results.count }}</h3>
+<div class="page-header">
+    <h1>Fyyur Search!</h1>
+	{% if (results.count == 0) %}
+		<h4>No of search results for "{{ search_term }}"</h4>
+	{% else %}
+		<h4>Number of search results for "{{ search_term }}": {{ results.count }}</h4>
+</div>
 <ul class="items">
 	{% for artist in results.data %}
 	<li>
