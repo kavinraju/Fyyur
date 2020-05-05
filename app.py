@@ -860,6 +860,65 @@ def create_show_submission():
   # see: http://flask.pocoo.org/docs/1.0/patterns/flashing/
   return redirect(url_for('index'))
 
+@app.route('/shows/search', methods=['POST'])
+def search_shows():
+
+  # Storing the search text into search_term
+  search_term=request.form.get('search_term', '').strip()
+
+  # Querying for the venues
+  venues = Venue.query.filter(Venue.name.ilike('%' + search_term.lower() + '%')).all()
+  
+  # Initializations
+  response = []
+
+  for venue in venues:
+    
+    # Getting the shows of the `venue`
+    shows = venue.shows
+
+    # Looping over shows to 
+    for show in shows:
+      is_upComingShow  = False
+      
+      if datetime.today() <= show.start_time:
+        is_upComingShow = True
+      
+      response.append({
+        "venue_id": show.venues.id,
+        "venue_name": show.venues.name,
+        "venue_image_link": show.venues.image_link,
+        "artist_id": show.artists.id,
+        "artist_name": show.artists.name,
+        "is_upComingShow": is_upComingShow,
+        "start_time": format_datetime(str(show.start_time))
+      })
+
+  ## DATA STRUCTURE ##
+  """ response = [{
+    "venue_id": 4,
+    "venue_name": 'Tamil Sangam',
+    "venue_image_link": 'https://images.unsplash.com/photo-1485686531765-ba63b07845a7?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=747&q=80',
+    "artist_id": 1,
+    "artist_name": 'Kavin Raju',
+    "is_upComingShow": True,
+    "start_time": "2019-05-21T21:30:00.000Z"
+  },{
+    "venue_id": 4,
+    "venue_name": 'Tamil Sangam',
+    "venue_image_link": 'https://images.unsplash.com/photo-1485686531765-ba63b07845a7?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=747&q=80',
+    "artist_id": 1,
+    "artist_name": 'Kavin Raju',
+    "is_upComingShow": True,
+    "start_time": "2019-05-21T21:30:00.000Z"
+  }] """
+
+  return render_template('pages/search_shows.html', results=response, search_term=request.form.get('search_term', ''))
+
+
+#  Error Handler
+#  ----------------------------------------------------------------
+
 @app.errorhandler(404)
 def not_found_error(error):
     return render_template('errors/404.html'), 404

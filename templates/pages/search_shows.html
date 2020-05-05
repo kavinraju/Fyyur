@@ -1,0 +1,39 @@
+{% extends 'layouts/main.html' %}
+{% block title %}Fyyur | Shows Search{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>Fyyur Search!</h1>
+    {% if (results.count == 0) %}
+        <h5>No of search results for "{{ search_term }}"</h5>
+    {% else %}
+        <h5>Number of search results for "{{ search_term }}": {{ results|length }}</h5>
+</div>
+    <div class="row shows">
+        {% for show in results %}
+        <div class="col-sm-4">
+            <div class="tile tile-show show">
+                <img src="{{ show.venue_image_link }}" alt="Venue Image" />
+                <a href="/venues/{{ show.venue_id }}">
+                    <i class="fas fa-music"></i>
+                    <div class="item">
+                        <h5>{{ show.venue_name }}</h5>
+                    </div>
+                </a>
+                <a href="/artists/{{ show.artist_id }}">
+                    <i class="fas fa-users"></i>
+                    <div class="item">
+                        <h5>{{ show.artist_name }}</h5>
+                    </div>
+                </a>
+                {% if (show.is_upComingShow) %}
+                <h6><b>Show is on {{ show.start_time|datetime('full') }}</b></h6>
+                {% else %}
+                <h6>Show  has been hosted already on {{ show.start_time|datetime('full') }}</h6>
+                {% endif %}
+            </div>    
+        </div>
+        {% endfor %}
+    </div>
+
+{% endif %}
+{% endblock %}
