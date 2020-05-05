@@ -617,7 +617,39 @@ def show_artist(artist_id):
 @app.route('/artists/<int:artist_id>/edit', methods=['GET'])
 def edit_artist(artist_id):
   form = ArtistForm()
-  artist={
+
+  # Querying for the artist with `artist_id`
+  artist = Artist.query.get(artist_id)
+
+  if not artist:
+    # If any other artist_id is entered it will be redirected to /artists endpoint
+    return redirect(url_for('artists'))
+  else:
+
+    # initializations
+    form = ArtistForm(obj=artist)
+    genres = []
+
+    # Iterating the `artist.genres`list to get the name of the genre
+    for genre in artist.genres:
+      genres.append(genre.name)
+    
+    
+    # Set the fields of the form 
+    # [ THIS IS ALSO VALID ]
+    form.name.data = artist.name
+    form.genres.data = genres
+    form.city.data = artist.city
+    form.state.data = artist.state
+    form.phone.data = artist.phone
+    form.seeking_venue.data = artist.seeking_venue
+    form.seeking_description.data = artist.seeking_description
+    form.image_link.data = artist.image_link
+    form.website.data = artist.website
+    form.facebook_link.data = artist.facebook_link
+
+  ## DATA STRUCTURE ##
+  """ artist={
     "id": 4,
     "name": "Guns N Petals",
     "genres": ["Rock n Roll"],
@@ -629,14 +661,78 @@ def edit_artist(artist_id):
     "seeking_venue": True,
     "seeking_description": "Looking for shows to perform at in the San Francisco Bay Area!",
     "image_link": "https://images.unsplash.com/photo-1549213783-8284d0336c4f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=300&q=80"
-  }
-  # TODO: populate form with fields from artist with ID <artist_id>
+  } """
+  # TODO: populate form with fields from artist with ID <artist_id> DONE
   return render_template('forms/edit_artist.html', form=form, artist=artist)
 
 @app.route('/artists/<int:artist_id>/edit', methods=['POST'])
 def edit_artist_submission(artist_id):
   # TODO: take values from the form submitted, and update existing
-  # artist record with ID <artist_id> using the new attributes
+  # artist record with ID <artist_id> using the new attributes DONE
+
+  # Get the instance of the form
+  artistForm = ArtistForm(request.form)
+  # Initializations
+  error_occured = False
+
+  if artistForm.validate():
+
+    try:
+      # Get the data from the form instance
+      name = artistForm.name.data
+      city = artistForm.city.data
+      state = artistForm.state.data
+      phone = artistForm.phone.data
+      genres = artistForm.genres.data
+      image_link = artistForm.image_link.data
+      facebook_link = artistForm.facebook_link.data
+      website = artistForm.website.data
+      seeking_venue = artistForm.seeking_venue.data
+      seeking_description = artistForm.seeking_description.data
+
+      # Query for the artist with `artist_id`
+      artist = Artist.query.get(artist_id)
+
+      # Update the artist
+      artist.name = name
+      artist.city = city
+      artist.state = state
+      artist.phone = phone
+      artist.image_link = image_link
+      artist.facebook_link = facebook_link
+      artist.website = website
+      artist.seeking_venue = seeking_venue
+      artist.seeking_description = seeking_description
+      
+      # Emptying `artist.genres` so that new set of genres can be updated
+      artist.genres = []
+
+      # Create a Genre object to insert into DB
+      for genre in genres:
+        genre_in_db = Genre.query.filter_by(name=genre).one_or_none()
+        # Add `genre` into db only if it's not in Genre table
+        if genre_in_db:
+          artist.genres.append(genre_in_db)
+        else:
+          new_genre = Genre(name=genre)
+          db.session.add(new_genre)
+          artist.genres.append(new_genre)
+      
+      # This updates the values
+      db.session.commit()
+    except Exception as e:
+      error_occured = True
+      print('Error occured while updating the artist - ', name, '\n', e)
+      db.session.rollback()
+    finally:
+      db.session.close()
+  else:
+    flash('Validation Failed')
+
+  if error_occured:
+    flash('An error occurred. Artist ' + name + ' could not be updated.')
+  else:
+    flash('Artist ' + request.form['name'] + ' was successfully updated!')
 
   return redirect(url_for('show_artist', artist_id=artist_id))
 
@@ -730,7 +826,6 @@ def edit_venue_submission(venue_id):
       address = venueForm.address.data
       phone = venueForm.phone.data
       genres = venueForm.genres.data
-      print('FORM genres', genres)
       image_link = venueForm.image_link.data
       facebook_link = venueForm.facebook_link.data
       website = venueForm.website.data
@@ -758,7 +853,7 @@ def edit_venue_submission(venue_id):
       # Create a Genre object to insert into DB
       for genre in genres:
         genre_in_db = Genre.query.filter_by(name=genre).one_or_none()
-        # Update `genre` into db only if it's not in Genre table
+        # Add `genre` into db only if it's not in Genre table
         if genre_in_db:
           venue.genres.append(genre_in_db)
         else:
