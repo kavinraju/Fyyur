@@ -1,5 +1,22 @@
-from app import db
 from datetime import datetime
+from sqlalchemy import Column, String, create_engine
+from flask_sqlalchemy import SQLAlchemy
+import json
+
+from config import local_database_path
+db = SQLAlchemy()
+
+database_path = local_database_path
+
+'''
+setup_db(app)
+    binds a flask application and a SQLAlchemy service
+'''
+def setup_db(app, database_path=database_path):
+    app.config.from_object('config')
+    db.app = app
+    db.init_app(app)
+    return db
 
 ### Association Table Declaration
 
