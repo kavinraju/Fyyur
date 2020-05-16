@@ -5,7 +5,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 # Enable debug mode.
 DEBUG = True
 # Heroku DB URI
-heroku_database_uri ='postgres://aerczexxbnwueh:86a424d6bdfe3c38512e3b09bf2385868cce9c0ffc5555cddf603584118407b5@ec2-52-71-55-81.compute-1.amazonaws.com:5432/d34pitgiibc309'
+heroku_database_uri ='postgres://zsfglqnhlmteob:1af5477353d7095d1fa599ed095609bbb2eeb762ac8424d36e38cedc10d92b4f@ec2-54-175-117-212.compute-1.amazonaws.com:5432/d1iafsk3io5bgl'
 # Local DB Details
 database_name = "fyyur_heruko"
 username = "postgres"
