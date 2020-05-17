@@ -1,2 +1,8 @@
 fyyur-project-fsnd/
 __pycache__/
+env_file.py
+fabfile.py
+forms.py
+static/
+templates/
+error.log
