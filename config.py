@@ -6,7 +6,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 # Enable debug mode.
 DEBUG = True
 # Heroku DB URI
-heroku_database_uri = heroku_database_uri_env
+heroku_database_uri = os.environ['DATABASE_URL']
 # Local DB Details
 database_name = database_name_env
 username = username_env
