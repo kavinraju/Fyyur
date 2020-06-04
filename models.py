@@ -3,10 +3,10 @@ from sqlalchemy import Column, String, create_engine
 from flask_sqlalchemy import SQLAlchemy
 import json
 
-from config import local_database_path, heroku_database_uri
+from config import database_uri
 db = SQLAlchemy()
 
-database_path = heroku_database_uri
+database_path = database_uri
 
 '''
 setup_db(app)
